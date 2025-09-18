@@ -51,15 +51,19 @@ const ToDoList: React.FC<ToDoListProps> = ({ todos }) => {
     }
 
     return (
-        <div style={{ padding: "20px" }}>
-            <h1>Kanban ToDo</h1>
+        <div style={{ padding: "20px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center", gap:"20px" }}>
+            <h1 style={{fontSize:"32px", marginBottom:"12px"}}>Kanban ToDo</h1>
+
+            <div style={{display:"flex", gap:"12px", width:"100%", justifyContent:"center"}}>
             <input
                 type="text"
                 value={newTaskText}
                 onChange={(e) => setNewTaskText(e.target.value)}
                 placeholder="Nueva tarea"
+                style={{backgroundColor:"lightsalmon", padding: "8px 14px", borderRadius:"12px"}}
             />
-            <button onClick={addTask}>Agregar</button>
+            <button style={{padding:"6px 12px", backgroundColor:"lightgray"}} onClick={addTask}>Agregar</button>
+            </div>
 
             <DndContext onDragEnd={handleDragEnd}>
                 <div style={{ display: "flex", gap: "20px", marginTop: "20px" }}>

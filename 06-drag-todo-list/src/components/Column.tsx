@@ -12,6 +12,19 @@ interface ColumnProps {
 export const Column: React.FC<ColumnProps> = ({ id, title, tasks }) => {
     const { setNodeRef } = useDroppable({ id });
 
+    const getBackgroundColor = (status: string) => {
+        switch (status) {
+            case 'to-do':
+                return '#ffdddd'; // rojo suave
+            case 'in-progress':
+                return "#fff3cd" // amarillo suave
+            case "done":
+                return '#d4edda'; // verde suave
+            default:
+                return '#f0f0f0'; // gris suave
+        }
+    }
+
     return (
         <div
             ref={setNodeRef}
@@ -19,8 +32,8 @@ export const Column: React.FC<ColumnProps> = ({ id, title, tasks }) => {
                 padding: "10px",
                 width: "250px",
                 minHeight: "300px",
-                backgroundColor: "#f0f0f0",
-                borderRadius: "8px",
+                backgroundColor: getBackgroundColor(id),
+                borderRadius: "8px"
             }}
         >
             <h2>{title}</h2>
