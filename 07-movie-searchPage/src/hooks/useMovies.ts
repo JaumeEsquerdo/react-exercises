@@ -1,21 +1,57 @@
 import { useQuery } from "@tanstack/react-query";
 
+
+// Tipado de la respuesta cruda de la API
+interface ApiMovie {
+    "#IMDB_ID": string;
+    "#TITLE": string;
+    "#YEAR": number;
+    "#IMG_POSTER"?: string;
+}
+
+interface ApiResponse {
+    ok: boolean;
+    error_code: number;
+    description: ApiMovie[];
+}
+
+// Tipado limpio para usar en la app
 interface Movie {
-    id: number;
+    id: string;
     title: string;
-    poster_path: string | null;
+    year: number;
+    poster: string | null;
 }
 
 async function fetchMovies(query: string): Promise<Movie[]> {
     // encodeURIComponent para construir urls dinamicas y seguras que no rompan la estructura de la url y complete espacios
+
     const res = await fetch(`https://imdb.iamidiotareyoutoo.com/search?q=${encodeURIComponent(query)}`);
+    /* seria mejor filtrar en la url los campos que pasan o por un backend (para mejorar el rendimiento del filtro) */
 
-    const data = await res.json();
 
-    // la API devuelve { description: [ { id, title, image, ... } ] }
+    const data: ApiResponse = await res.json();
+    console.log(data)
 
-    return data.description || [];
+
+    // Recorre cada ApiMovie y lo transforma a tu interfaz Movie
+    /* OJO!!
+- Aquí sí estás filtrando datos:
+Solo tomas #IMDB_ID, #TITLE, #YEAR, #IMG_POSTER.
+
+Cualquier otra propiedad que viniera en el objeto ApiMovie se queda en el aire; no pasa a tu array final de Movie[].
+
+Es decir, aunque la API devuelva más datos, tu app solo trabaja con lo que tú defines en Movie. */
+    return (data.description ?? []).map((item) => ({
+        id: item["#IMDB_ID"],
+        title: item["#TITLE"],
+        year: item["#YEAR"],
+        poster: item["#IMG_POSTER"] ?? null,
+    }));
+    /* porque ?? solo reemplaza null o undefined, dejando arrays vacíos [] intactos, mientras que || también reemplaza falsy como "" o 0.
+Así expresas claramente: “si no hay description, uso []” sin afectar valores válidos.  */
 }
+
 
 export function useMovies(query: string) {
     return useQuery({
